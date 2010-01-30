@@ -20,10 +20,11 @@ Feature: Print step definition snippets for undefined steps
     When I run cucumber -f pretty
     Then the output should contain
       """
-      [Pending]
-      [Given(@"^we're all wired$")]
-      public void WereAllWired()
-      {
+      cuke.WereAllWired = {
+        pending = true,
+        given = "^we're all wired$",
+        step = function()
+        end
       }
       """
 
@@ -41,10 +42,11 @@ Feature: Print step definition snippets for undefined steps
     When I run cucumber -f pretty
     Then the output should contain
       """
-      [Pending]
-      [Given(@"^we're all wired$")]
-      public void WereAllWired(Table table)
-      {
+      cuke.WereAllWired = {
+        pending = true,
+        given = "^we're all wired$",
+        step = function(table)
+        end
       }
       """
 
@@ -62,10 +64,11 @@ Feature: Print step definition snippets for undefined steps
     When I run cucumber -f pretty
     Then the output should contain
       """
-      [Pending]
-      [Given(@"^we're all wired$")]
-      public void WereAllWired(string str)
-      {
+      cuke.WereAllWired = {
+        pending = true,
+        given = "^we're all wired$",
+        step = function(s)
+        end
       }
       """
 
@@ -85,18 +88,20 @@ Feature: Print step definition snippets for undefined steps
     When I run cucumber -f pretty
     Then the output should contain
       """
-      [Pending]
-      [Given(@"^we're all wired$")]
-      public void WereAllWired()
-      {
+      cuke.WereAllWired = {
+        pending = true,
+        given = "^we're all wired$",
+        step = function()
+        end
       }
       """
     And the output should contain
       """
-      [Pending]
-      [Given(@"^we're all not wired$")]
-      public void WereAllNotWired()
-      {
+      cuke.WereAllNotWired = {
+        pending = true,
+        given = "^we're all not wired$",
+        step = function()
+        end
       }
       """
 
@@ -114,18 +119,20 @@ Feature: Print step definition snippets for undefined steps
     When I run cucumber -f pretty
     Then the output should contain
       """
-      [Pending]
-      [Given(@"^we're all wired$")]
-      public void WereAllWired()
-      {
+      cuke.WereAllWired = {
+        pending = true,
+        given = "^we're all wired$",
+        step = function()
+        end
       }
       """
     And the output should contain
       """
-      [Pending]
-      [Given(@"^something to do first$")]
-      public void SomethingToDoFirst()
-      {
+      cuke.SomethingToDoFirst = {
+        pending = true,
+        given = "^something to do first$",
+        step = function()
+        end
       }
       """
 
@@ -141,10 +148,11 @@ Feature: Print step definition snippets for undefined steps
     Then STDERR should be empty
     And the output should contain
       """
-      [Pending]
-      [Given(@"^the separator is ,$")]
-      public void TheSeparatorIs()
-      {
+      cuke.TheSeparatorIs = {
+        pending = true,
+        given = "^the separator is ,$",
+        step = function()
+        end
       }
       """
 
@@ -159,5 +167,5 @@ Feature: Print step definition snippets for undefined steps
      When I run cucumber -f pretty
      Then the output should contain
       """
-      [Given(@"^I ""love"" quotes$")]
+      given = "^I \"love\" quotes$",
       """

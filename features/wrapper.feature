@@ -18,12 +18,10 @@ Feature: Run Cuke4Lua and Cucumber from a single command
     Scenario: A passing step
       Given a step definition module containing:
         """
-        public class GeneratedSteps
-        {
-          [Given("^we're all wired$")]
-          public static void AllWired()
-          {
-          }
+        cuke.AllWired = {
+          given = "^we're all wired$"
+          step = function()
+          end
         }
         """
       When I run the cuke4lua wrapper
@@ -40,13 +38,11 @@ Feature: Run Cuke4Lua and Cucumber from a single command
     Scenario: A failing step
       Given a step definition module containing:
         """
-        public class GeneratedSteps
-        {
-          [Given("^we're all wired$")]
-          public static void AllWired()
-          {
-            throw new Exception("message");
-          }
+        cuke.AllWired = {
+          given = "^we're all wired$"
+          step = function()
+            error "message"
+          end
         }
         """
       When I run the cuke4lua wrapper

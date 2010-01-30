@@ -53,7 +53,7 @@ Feature: Run Lua step definitions from Cucumber
     Given Cuke4Lua started with a step definition module containing:
       """
       cuke.AllWired = {
-        given = "^we're all wired$"
+        given = "^we're all wired$",
         step = function()
         end
       }
@@ -73,7 +73,7 @@ Feature: Run Lua step definitions from Cucumber
     Given Cuke4Lua started with a step definition module containing:
       """
       cuke.AllWired = {
-        given = "^we're all wired$"
+        given = "^we're all wired$",
         step = function()
         end
       }
@@ -96,9 +96,9 @@ Feature: Run Lua step definitions from Cucumber
     Given Cuke4Lua started with a step definition module containing:
       """
       cuke.AllWired = {
-        given = "^we're all wired$"
+        given = "^we're all wired$",
         step = function()
-          throw "ouch TODO"
+          error "ouch"
         end
       }
       """

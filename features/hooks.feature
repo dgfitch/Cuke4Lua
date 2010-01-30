@@ -18,24 +18,18 @@ Feature: Run Lua Before and After hooks from Cucumber
       """
     And Cuke4Lua started with a step definition module containing:
       """
-      public class GeneratedSteps
-      {
-        int _cukeCount = 0;
-        
-        [Before]
-        public void Setup()
-        {
-          _cukeCount = 4;
-        }
-      
-        [Then(@"^I should have (\d+) cukes$")]
-        public void ExpectCukes(int cukes)
-        {
-          if (_cukeCount != cukes)
-          {
-            throw new Exception("Expected value: " + cukes.ToString() + ". Actual value: " + _cukeCount.ToString() + ".");
-          }
-        }
+      _cukeCount = 0
+
+      cuke.Setup = {
+        before = true,
+        _cukeCount = 4
+      }
+
+      cuke.ExpectCukes = {
+        then = "^I should have (\d+) cukes$",
+        step = function(cukes)
+          assert(_cukeCount = cukes, string.format("Expected %s, got %s cukes", cukes, _cukeCount)
+        end
       }
       """
     When I run cucumber -f progress features
@@ -58,18 +52,17 @@ Feature: Run Lua Before and After hooks from Cucumber
       """
     And Cuke4Lua started with a step definition module containing:
       """
-      public class GeneratedSteps
-      {
-        [After]
-        public void Teardown()
-        {
-          throw new Exception();
-        }
+      cuke.Teardown = {
+        after = true,
+        step = function(cukes)
+          error "EXPLODE!"
+        end
+      }
 
-        [Given(@"^a passing step$")]
-        public void PassingStep()
-        {
-        }
+      cuke.PassingStep = {
+        then = "^a passing step$",
+        step = function()
+        end
       }
       """
     When I run cucumber -f progress features

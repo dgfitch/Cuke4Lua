@@ -18,13 +18,11 @@ Feature: Pending Steps
   Scenario: Pending step gives pending output
     Given Cuke4Lua started with a step definition module containing:
       """
-      public class GeneratedSteps
-      {
-        [Pending]
-        [Given("^we're all wired$")]
-        public static void AllWired()
-        {
-        }
+      cuke.AllWired = {
+        pending = true,
+        given = "^we're all wired$",
+        step = function()
+        end
       }
       """
     When I run cucumber -f pretty -q
