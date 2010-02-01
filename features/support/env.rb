@@ -28,7 +28,7 @@ class CucumberWorld
   end
   
   def cuke4lua_server
-    @cuke4lua_server ||= File.expand_path(File.join(File.dirname(__FILE__), '../../lib/TODO'))
+    @cuke4lua_server ||= File.expand_path(File.join(File.dirname(__FILE__), '../../lib/cuke4lua.lua'))
   end
   
   def cuke4lua_wrapper_path

@@ -1,12 +1,12 @@
 Given /^Cuke4Lua started with no step definition modules$/ do
   # TODO
-  run_in_background cuke4lua_server
+  run_in_background %{lua #{cuke4lua_server}}
 end
 
 Given /^Cuke4Lua started with a step definition module containing:$/ do |contents|
   # TODO
   module_path = build_step_definitions(contents)
-  run_in_background %{#{cuke4lua_server} "#{module_path}"}
+  run_in_background %{lua #{cuke4lua_server} "#{module_path}"}
 end
 
 Given /^a step definition module containing:$/ do |contents|
