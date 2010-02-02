@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'rbconfig'
 require 'tempfile'
 require 'spec/expectations'
 require 'fileutils'
@@ -8,7 +9,7 @@ require 'erb'
 
 class CucumberWorld
   extend Forwardable
-  def_delegators CucumberWorld, :examples_dir, :self_test_dir, :working_dir, :cucumber_lib_dir, :cuke4lua_server, :cuke4lua_wrapper_path
+  def_delegators CucumberWorld, :examples_dir, :self_test_dir, :working_dir, :lib_dir, :cuke4lua_server, :cuke4lua_wrapper_path
 
   def self.examples_dir(subdir=nil)
     @examples_dir ||= File.expand_path(File.join(File.dirname(__FILE__), '../../examples'))
@@ -23,8 +24,18 @@ class CucumberWorld
     @working_dir ||= examples_dir('self_test/tmp')
   end
 
-  def cucumber_lib_dir
-    @cucumber_lib_dir ||= File.expand_path(File.join(File.dirname(__FILE__), '../../lib'))
+  def lib_dir
+    @lib_dir ||= File.expand_path(File.join(File.dirname(__FILE__), '../../lib'))
+  end
+  
+  def lua_lib_dir
+    @lua_lib_dir ||= File.expand_path(File.join(File.dirname(__FILE__), '../../lib'))
+    os = Config::CONFIG['host_os'] 
+    if os =~ /mswin|mingw/ then
+      @lua_lib_dir.gsub('/', '\\')
+    else
+      @lua_lib_dir
+    end
   end
   
   def cuke4lua_server
@@ -71,7 +82,7 @@ class CucumberWorld
   end
 
   def create_file(file_name, file_content)
-    file_content.gsub!("CUCUMBER_LIB", "'#{cucumber_lib_dir}'") # Some files, such as Rakefiles need to use the lib dir
+    file_content.gsub!("CUCUMBER_LIB", "'#{lib_dir}'") # Some files, such as Rakefiles need to use the lib dir
     in_current_dir do
       FileUtils.mkdir_p(File.dirname(file_name)) unless File.directory?(File.dirname(file_name))
       File.open(file_name, 'w') { |f| f << file_content }

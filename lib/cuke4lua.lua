@@ -1,10 +1,12 @@
+libdir = arg[1]
 local socket = require "socket"
-require "json"
+package.path = libdir .. "\\?.lua;" .. package.path
+require("json")
 
 host = "127.0.0.1"
-port = arg[2] or 3901
+port = arg[3] or 3901
 
-file = arg[1]
+file = arg[2]
 -- TODO: load file if set
 --require file
 
