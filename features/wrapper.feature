@@ -18,9 +18,9 @@ Feature: Run Cuke4Lua and Cucumber from a single command
     Scenario: A passing step
       Given a step definition module containing:
         """
-        cuke.AllWired = {
-          given = "^we're all wired$"
-          step = function()
+        { AllWired = {
+          Given = "^we're all wired$"
+          Step = function()
           end
         }
         """
@@ -38,9 +38,9 @@ Feature: Run Cuke4Lua and Cucumber from a single command
     Scenario: A failing step
       Given a step definition module containing:
         """
-        cuke.AllWired = {
-          given = "^we're all wired$"
-          step = function()
+        { AllWired = {
+          Given = "^we're all wired$"
+          Step = function()
             error "message"
           end
         }

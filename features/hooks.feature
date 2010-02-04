@@ -18,18 +18,21 @@ Feature: Run Lua Before and After hooks from Cucumber
       """
     And Cuke4Lua started with a step definition module containing:
       """
-      _cukeCount = 0
+      {
+        _cukeCount = 0,
+        Setup = {
+          Before = true,
+          Step = function()
+            cuke._cukeCount = 4
+          end
+        },
 
-      cuke.Setup = {
-        before = true,
-        _cukeCount = 4
-      }
-
-      cuke.ExpectCukes = {
-        then = "^I should have (\d+) cukes$",
-        step = function(cukes)
-          assert(_cukeCount = cukes, string.format("Expected %s, got %s cukes", cukes, _cukeCount)
-        end
+        ExpectCukes = {
+          Then = "^I should have (\d+) cukes$",
+          Step = function(cukes)
+            assert(cuke._cukeCount = cukes, string.format("Expected %s, got %s cukes", cukes, cuke._cukeCount)
+          end
+        }
       }
       """
     When I run cucumber -f progress features
@@ -52,17 +55,19 @@ Feature: Run Lua Before and After hooks from Cucumber
       """
     And Cuke4Lua started with a step definition module containing:
       """
-      cuke.Teardown = {
-        after = true,
-        step = function(cukes)
-          error "EXPLODE!"
-        end
-      }
+      {
+        Teardown = {
+          after = true,
+          step = function(cukes)
+            error "EXPLODE!"
+          end
+        },
 
-      cuke.PassingStep = {
-        then = "^a passing step$",
-        step = function()
-        end
+        PassingStep = {
+          then = "^a passing step$",
+          step = function()
+          end
+        }
       }
       """
     When I run cucumber -f progress features

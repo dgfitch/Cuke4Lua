@@ -7,8 +7,9 @@ host = "127.0.0.1"
 port = arg[3] or 3901
 
 file = arg[2]
--- TODO: load file if set
---require file
+if file then 
+  cuke = dofile(file)
+end
 
 -- TODO: Put logfile in standard location
 --require "logging.console"
@@ -16,7 +17,7 @@ file = arg[2]
 require "logging.file"
 local log = logging.file("test%s.log", "%Y-%m-%d", "%date %level %message\n")
 
-log:info(string.format("Starting cuke4lua server on host %s port %s", host, port))
+log:info(string.format("Starting cuke4lua server on host %s port %s with file %s", host, port, file or "NONE"))
 
 server = assert(socket.bind(host, port))
 server:settimeout(60)
@@ -30,7 +31,9 @@ input = function(data)
 end
 
 output = function(o)
-  conn:send( json.encode(o) .. "\n" )
+  local s = json.encode(o)
+  log:info("Sending: " .. s)
+  conn:send(s .. "\n")
 end
 
 success = function(x)
@@ -40,7 +43,6 @@ success = function(x)
 end
 
 fail = function(s)
-  log:warn(s)
   output({"fail",{message=s,exception="Cuke4LuaFailure"}})
 end
 
@@ -51,13 +53,25 @@ repeat
   if data then
     if pcall(function () input(data) end) then
       log:info("JSON message received: " .. data)
-      local op = obj[0]
+      local op = obj[1]
       if (op == "begin_scenario" ) then
         log:info("Beginning scenario")
         success()
+      elseif (op == "end_scenario" ) then
+        log:info("Ending scenario")
+        success()
       elseif (op == "step_matches") then
         log:info("Finding step matches")
-        success({})
+        local matches = {}
+        if cuke then
+          for k,v in pairs(cuke) do
+            local stepRegex = v.Given or v.When or v.Then
+            if true then --stepRegex matches then
+              table.insert(matches,{id=k,args={}})
+            end
+          end
+        end
+        success(matches)
       else
         fail("Don't know how to " .. op)
       end
