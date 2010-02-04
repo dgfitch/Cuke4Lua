@@ -127,7 +127,8 @@ class CucumberWorld
   def terminate_background_jobs
     if @background_jobs
       @background_jobs.each do |pid|
-        Process.kill(9, pid)
+        # TODO
+        #Process.kill(9, pid)
       end
     end
   end
