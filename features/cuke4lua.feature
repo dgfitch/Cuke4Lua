@@ -32,11 +32,11 @@ Feature: Run Lua step definitions from Cucumber
   Scenario: Dry run finds a step match
     Given Cuke4Lua started with a step definition module containing:
       """
-      { AllWired = {
-        Given = "^we're all wired$"
+      cuke.AllWired = {
+        Given = "^we're all wired$",
         Step = function()
         end
-      } }
+      }
       """
     When I run cucumber --dry-run -f progress features  
     Then STDERR should be empty
@@ -52,11 +52,11 @@ Feature: Run Lua step definitions from Cucumber
   Scenario: Invoke a step definition which passes
     Given Cuke4Lua started with a step definition module containing:
       """
-      { AllWired = {
-        Given = "^we're all wired$"
+      cuke.AllWired = {
+        Given = "^we're all wired$",
         Step = function()
         end
-      } }
+      }
       """
     When I run cucumber -f progress features
     Then STDERR should be empty
@@ -72,11 +72,11 @@ Feature: Run Lua step definitions from Cucumber
   Scenario: Invoke a step definition which passes, using pretty format
     Given Cuke4Lua started with a step definition module containing:
       """
-      { AllWired = {
+      cuke.AllWired = {
         Given = "^we're all wired$",
         Step = function()
         end
-      } }
+      }
       """
     When I run cucumber --no-source -f pretty features
     Then STDERR should be empty
@@ -95,12 +95,12 @@ Feature: Run Lua step definitions from Cucumber
   Scenario: Invoke a step definition which fails
     Given Cuke4Lua started with a step definition module containing:
       """
-      { AllWired = {
+      cuke.AllWired = {
         Given = "^we're all wired$",
         Step = function()
           error "ouch"
         end
-      } }
+      }
       """
     When I run cucumber -f progress features
     Then it should fail

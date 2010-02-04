@@ -8,7 +8,8 @@ port = arg[3] or 3901
 
 file = arg[2]
 if file then 
-  cuke = dofile(file)
+  cuke = {}
+  dofile(file)
 end
 
 -- TODO: Put logfile in standard location
@@ -72,6 +73,16 @@ repeat
           end
         end
         success(matches)
+      elseif (op == "invoke") then
+        if cuke then
+          local opts = obj[2]
+          local id = opts.id
+          local args = opts.args
+          cuke[tostring(id)].Step(unpack(args))
+          success()
+        else
+          fail("No steps defined")
+        end
       else
         fail("Don't know how to " .. op)
       end

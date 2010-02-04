@@ -19,7 +19,7 @@ Feature: Run Cuke4Lua and Cucumber from a single command
       Given a step definition module containing:
         """
         { AllWired = {
-          Given = "^we're all wired$"
+          Given = "^we're all wired$",
           Step = function()
           end
         }
@@ -39,7 +39,7 @@ Feature: Run Cuke4Lua and Cucumber from a single command
       Given a step definition module containing:
         """
         { AllWired = {
-          Given = "^we're all wired$"
+          Given = "^we're all wired$",
           Step = function()
             error "message"
           end
