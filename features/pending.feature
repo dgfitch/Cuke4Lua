@@ -18,7 +18,7 @@ Feature: Pending Steps
   Scenario: Pending step gives pending output
     Given Cuke4Lua started with a step definition module containing:
       """
-      { AllWired = {
+      cuke.AllWired = {
         Pending = true,
         Given = "^we're all wired$",
         Step = function()

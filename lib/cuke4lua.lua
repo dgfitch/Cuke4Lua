@@ -1,7 +1,8 @@
 libdir = arg[1]
-local socket = require "socket"
 package.path = libdir .. "\\?.lua;" .. package.path
-require "json"
+local socket = require "socket"
+local regex = require('rex_pcre')
+local json = require "json"
 
 host = "127.0.0.1"
 port = arg[3] or 3901
@@ -24,7 +25,6 @@ server = assert(socket.bind(host, port))
 server:settimeout(60)
 conn = server:accept()
 
---local skip = conn:receive()
 
 local obj
 input = function(data)
@@ -64,10 +64,13 @@ repeat
       elseif (op == "step_matches") then
         log:info("Finding step matches")
         local matches = {}
+        local nameToMatch = obj[2].name_to_match
         if cuke then
           for k,v in pairs(cuke) do
             local stepRegex = v.Given or v.When or v.Then
-            if true then --stepRegex matches then
+            --if true then
+            if stepRegex and regex.match(nameToMatch, stepRegex) then
+              -- TODO: set pending in json if v.Pending
               table.insert(matches,{id=k,args={}})
             end
           end
