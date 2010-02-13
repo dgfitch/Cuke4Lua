@@ -30,7 +30,9 @@ Feature: Run Lua Before and After hooks from Cucumber
       cuke.ExpectCukes = {
         Given = "^I should have 4 cukes$",
         Step = function()
-          assert(count == 4, string.format("Expected 4, got %s cukes", cukes, count))
+          if count ~= 4 then
+            error("Expected 4 cukes!")
+          end
         end
       }
       """

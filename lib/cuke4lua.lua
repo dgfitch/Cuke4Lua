@@ -57,9 +57,15 @@ repeat
       local op = obj[1]
       if (op == "begin_scenario" ) then
         log:info("Beginning scenario")
+        for k,v in pairs(cuke) do
+          if cuke.Before then cuke.Step() end
+        end
         success()
       elseif (op == "end_scenario" ) then
         log:info("Ending scenario")
+        for k,v in pairs(cuke) do
+          if cuke.After then cuke.Step() end
+        end
         success()
       elseif (op == "step_matches") then
         log:info("Finding step matches")
@@ -68,7 +74,6 @@ repeat
         if cuke then
           for k,v in pairs(cuke) do
             local stepRegex = v.Given or v.When or v.Then
-            --if true then
             if stepRegex and regex.match(nameToMatch, stepRegex) then
               -- TODO: set pending in json if v.Pending
               table.insert(matches,{id=k,args={}})
