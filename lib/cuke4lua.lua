@@ -57,14 +57,18 @@ repeat
       local op = obj[1]
       if (op == "begin_scenario" ) then
         log:info("Beginning scenario")
-        for k,v in pairs(cuke) do
-          if v.Before then cuke.Step() end
+        if cuke then
+          for k,v in pairs(cuke) do
+            if v.Before then cuke.Step() end
+          end
         end
         success()
       elseif (op == "end_scenario" ) then
         log:info("Ending scenario")
-        for k,v in pairs(cuke) do
-          if v.After then cuke.Step() end
+        if cuke then
+          for k,v in pairs(cuke) do
+            if v.After then cuke.Step() end
+          end
         end
         success()
       elseif (op == "step_matches") then
@@ -75,8 +79,8 @@ repeat
           for k,v in pairs(cuke) do
             local stepRegex = v.Given or v.When or v.Then
             if stepRegex and regex.match(nameToMatch, stepRegex) then
-              -- TODO: set pending in json if v.Pending
-              table.insert(matches,{id=k,args={}})
+              local value = {id=k,args={}}
+              table.insert(matches,value)
             end
           end
         end
@@ -84,13 +88,42 @@ repeat
       elseif (op == "invoke") then
         if cuke then
           local opts = obj[2]
-          local id = opts.id
           local args = opts.args
-          cuke[tostring(id)].Step(unpack(args))
-          success()
+          local f = cuke[tostring(opts.id)]
+          if f.Pending then
+            local result = "TODO"
+            if type(f.Pending) == "string" then
+              result = f.Pending
+            end
+            output({"pending",result})
+          else
+            f.Step(unpack(args))
+            success()
+          end
         else
           fail("No steps defined")
         end
+      elseif (op == "snippet_text") then
+        local opts = obj[2]
+        local keyword = opts.step_keyword
+        local step_name = opts.step_name
+        local arg_class = opts.multiline_arg_class
+        local function case_helper(first, rest)
+          return first:upper()..rest:lower()
+        end
+        local fixed_name = step_name:gsub("(%a)([%w_']*)", case_helper):gsub("[^a-zA-Z]", "")
+        local args
+        if (not arg_class or arg_class == "") then
+          args = ""
+        elseif (arg_class == "Cucumber::Ast::Table") then
+          args = "table"
+        elseif (arg_class == "Cucumber::Ast::PyString") then
+          args = "s"
+        else
+          args = arg_class
+        end
+        local snippet = string.format("cuke.%s = {\n  Pending = true,\n  Given = \"^%s$\",\n  Step = function(%s)\n  end\n}\n", fixed_name, step_name, args)
+        success(snippet)
       else
         fail("Don't know how to " .. op)
       end

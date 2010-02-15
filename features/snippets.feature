@@ -21,9 +21,9 @@ Feature: Print step definition snippets for undefined steps
     Then the output should contain
       """
       cuke.WereAllWired = {
-        pending = true,
-        given = "^we're all wired$",
-        step = function()
+        Pending = true,
+        Given = "^we're all wired$",
+        Step = function()
         end
       }
       """
@@ -43,9 +43,9 @@ Feature: Print step definition snippets for undefined steps
     Then the output should contain
       """
       cuke.WereAllWired = {
-        pending = true,
-        given = "^we're all wired$",
-        step = function(table)
+        Pending = true,
+        Given = "^we're all wired$",
+        Step = function(table)
         end
       }
       """
@@ -65,9 +65,9 @@ Feature: Print step definition snippets for undefined steps
     Then the output should contain
       """
       cuke.WereAllWired = {
-        pending = true,
-        given = "^we're all wired$",
-        step = function(s)
+        Pending = true,
+        Given = "^we're all wired$",
+        Step = function(s)
         end
       }
       """
@@ -89,18 +89,18 @@ Feature: Print step definition snippets for undefined steps
     Then the output should contain
       """
       cuke.WereAllWired = {
-        pending = true,
-        given = "^we're all wired$",
-        step = function()
+        Pending = true,
+        Given = "^we're all wired$",
+        Step = function()
         end
       }
       """
     And the output should contain
       """
       cuke.WereAllNotWired = {
-        pending = true,
-        given = "^we're all not wired$",
-        step = function()
+        Pending = true,
+        Given = "^we're all not wired$",
+        Step = function()
         end
       }
       """
@@ -120,18 +120,18 @@ Feature: Print step definition snippets for undefined steps
     Then the output should contain
       """
       cuke.WereAllWired = {
-        pending = true,
-        given = "^we're all wired$",
-        step = function()
+        Pending = true,
+        Given = "^we're all wired$",
+        Step = function()
         end
       }
       """
     And the output should contain
       """
       cuke.SomethingToDoFirst = {
-        pending = true,
-        given = "^something to do first$",
-        step = function()
+        Pending = true,
+        Given = "^something to do first$",
+        Step = function()
         end
       }
       """
@@ -149,9 +149,9 @@ Feature: Print step definition snippets for undefined steps
     And the output should contain
       """
       cuke.TheSeparatorIs = {
-        pending = true,
-        given = "^the separator is ,$",
-        step = function()
+        Pending = true,
+        Given = "^the separator is ,$",
+        Step = function()
         end
       }
       """
@@ -167,5 +167,5 @@ Feature: Print step definition snippets for undefined steps
      When I run cucumber -f pretty
      Then the output should contain
       """
-      given = "^I \"love\" quotes$",
+      Given = "^I \"love\" quotes$",
       """
