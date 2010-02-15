@@ -26,6 +26,8 @@ server:settimeout(60)
 conn = server:accept()
 
 
+-- This needs to be called via pcall in case it blows up, and I'm not sure how 
+-- to wrap a return value otherwise, so I'm stashing it...
 local obj
 input = function(data)
   obj = json.decode(data)
@@ -47,6 +49,86 @@ fail = function(s)
   output({"fail",{message=s,exception="Cuke4LuaFailure"}})
 end
 
+responses = {
+  begin_scenario = function()
+    log:info("Beginning scenario")
+    if cuke then
+      for k,v in pairs(cuke) do
+        if v.Before then cuke.Step() end
+      end
+    end
+    success()
+  end,
+
+  end_scenario = function()
+    log:info("Ending scenario")
+    if cuke then
+      for k,v in pairs(cuke) do
+        if v.After then cuke.Step() end
+      end
+    end
+    success()
+  end,
+
+  step_matches = function(opts)
+    log:info("Finding step matches")
+    local matches = {}
+    local nameToMatch = opts.name_to_match
+    if cuke then
+      for k,v in pairs(cuke) do
+        local stepRegex = v.Given or v.When or v.Then
+        if stepRegex and regex.match(nameToMatch, stepRegex) then
+          local value = {id=k,args={}}
+          table.insert(matches,value)
+        end
+      end
+    end
+    success(matches)
+  end,
+
+  invoke = function(opts)
+    if cuke then
+      local args = opts.args
+      local f = cuke[tostring(opts.id)]
+      if f.Pending then
+        local result = "TODO"
+        if type(f.Pending) == "string" then
+          result = f.Pending
+        end
+        output({"pending",result})
+      else
+        f.Step(unpack(args))
+        success()
+      end
+    else
+      fail("No steps defined")
+    end
+  end,
+
+  snippet_text = function(opts)
+    local keyword = opts.step_keyword
+    local step_name = opts.step_name
+    local arg_class = opts.multiline_arg_class
+    local function case_helper(first, rest)
+      return first:upper()..rest:lower()
+    end
+    local fixed_name = step_name:gsub("(%a)([%w_']*)", case_helper):gsub("[^a-zA-Z]", "")
+    local args
+    if (not arg_class or arg_class == "") then
+      args = ""
+    elseif (arg_class == "Cucumber::Ast::Table") then
+      args = "table"
+    elseif (arg_class == "Cucumber::Ast::PyString") then
+      args = "s"
+    else
+      args = arg_class
+    end
+    local snippet = string.format("cuke.%s = {\n  Pending = true,\n  Given = \"^%s$\",\n  Step = function(%s)\n  end\n}\n", fixed_name, step_name, args)
+    success(snippet)
+  end
+}
+
+
 local e
 repeat
   local data,e = conn:receive()
@@ -55,75 +137,9 @@ repeat
     if pcall(function () input(data) end) then
       log:info("JSON message received: " .. data)
       local op = obj[1]
-      if (op == "begin_scenario" ) then
-        log:info("Beginning scenario")
-        if cuke then
-          for k,v in pairs(cuke) do
-            if v.Before then cuke.Step() end
-          end
-        end
-        success()
-      elseif (op == "end_scenario" ) then
-        log:info("Ending scenario")
-        if cuke then
-          for k,v in pairs(cuke) do
-            if v.After then cuke.Step() end
-          end
-        end
-        success()
-      elseif (op == "step_matches") then
-        log:info("Finding step matches")
-        local matches = {}
-        local nameToMatch = obj[2].name_to_match
-        if cuke then
-          for k,v in pairs(cuke) do
-            local stepRegex = v.Given or v.When or v.Then
-            if stepRegex and regex.match(nameToMatch, stepRegex) then
-              local value = {id=k,args={}}
-              table.insert(matches,value)
-            end
-          end
-        end
-        success(matches)
-      elseif (op == "invoke") then
-        if cuke then
-          local opts = obj[2]
-          local args = opts.args
-          local f = cuke[tostring(opts.id)]
-          if f.Pending then
-            local result = "TODO"
-            if type(f.Pending) == "string" then
-              result = f.Pending
-            end
-            output({"pending",result})
-          else
-            f.Step(unpack(args))
-            success()
-          end
-        else
-          fail("No steps defined")
-        end
-      elseif (op == "snippet_text") then
-        local opts = obj[2]
-        local keyword = opts.step_keyword
-        local step_name = opts.step_name
-        local arg_class = opts.multiline_arg_class
-        local function case_helper(first, rest)
-          return first:upper()..rest:lower()
-        end
-        local fixed_name = step_name:gsub("(%a)([%w_']*)", case_helper):gsub("[^a-zA-Z]", "")
-        local args
-        if (not arg_class or arg_class == "") then
-          args = ""
-        elseif (arg_class == "Cucumber::Ast::Table") then
-          args = "table"
-        elseif (arg_class == "Cucumber::Ast::PyString") then
-          args = "s"
-        else
-          args = arg_class
-        end
-        local snippet = string.format("cuke.%s = {\n  Pending = true,\n  Given = \"^%s$\",\n  Step = function(%s)\n  end\n}\n", fixed_name, step_name, args)
-        success(snippet)
+      local f = responses[op]
+      if f then
+        f(obj[2])
       else
         fail("Don't know how to " .. op)
       end
