@@ -18,6 +18,8 @@ Feature: Run Lua Before and After hooks from Cucumber
       """
     And Cuke4Lua started with a step definition module containing:
       """
+      cuke.count = 0
+
       cuke.Setup = {
         Before = true,
         Step = function()
@@ -28,7 +30,7 @@ Feature: Run Lua Before and After hooks from Cucumber
       cuke.ExpectCukes = {
         Given = "^I should already have some cukes$",
         Step = function()
-          assert(count > 0)
+          assert(cuke.count > 0, "No cukes, oh no!")
         end
       }
       """

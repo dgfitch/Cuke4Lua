@@ -7,11 +7,9 @@ local json = require "json"
 host = "127.0.0.1"
 port = arg[3] or 3901
 
+cuke = {}
 file = arg[2]
-if file then 
-  cuke = {}
-  dofile(file)
-end
+if file then dofile(file) end
 
 -- TODO: Put logfile in standard location
 --require "logging.console"
@@ -39,9 +37,9 @@ output = function(o)
   conn:send(s .. "\n")
 end
 
-success = function(x)
+success = function(args)
   local t = {"success"}
-  if x then table.insert(t, x) end
+  if args then table.insert(t, args) end
   output(t)
 end
 
@@ -54,7 +52,7 @@ responses = {
     log:info("Beginning scenario")
     if cuke then
       for k,v in pairs(cuke) do
-        if v.Before then cuke.Step() end
+        if type(v) == "table" and v.Before then v.Step() end
       end
     end
     success()
@@ -64,7 +62,7 @@ responses = {
     log:info("Ending scenario")
     if cuke then
       for k,v in pairs(cuke) do
-        if v.After then cuke.Step() end
+        if type(v) == "table" and v.After then v.Step() end
       end
     end
     success()
@@ -76,10 +74,12 @@ responses = {
     local nameToMatch = opts.name_to_match
     if cuke then
       for k,v in pairs(cuke) do
-        local stepRegex = v.Given or v.When or v.Then
-        if stepRegex and regex.match(nameToMatch, stepRegex) then
-          local value = {id=k,args={}}
-          table.insert(matches,value)
+        if type(v) == "table" then
+          local stepRegex = v.Given or v.When or v.Then
+          if stepRegex and regex.match(nameToMatch, stepRegex) then
+            local value = {id=k,args={}}
+            table.insert(matches,value)
+          end
         end
       end
     end

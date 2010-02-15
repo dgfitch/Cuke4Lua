@@ -2,7 +2,7 @@
 
 ### a Lua wire protocol wrapper and runner for cucumber 
 
-EXTREMELY ALPHA, barely passing its first features.
+Alpha status, barely passing its first features.
 
 ### Requirements
 
