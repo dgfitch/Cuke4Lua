@@ -13,26 +13,22 @@ Feature: Run Lua Before and After hooks from Cucumber
     Given a file named "features/adding.feature" with:
       """
         Scenario: Cuke count set in Before
-          Then I should have 4 cukes
+          Then I should already have some cukes
 
       """
     And Cuke4Lua started with a step definition module containing:
       """
-      count = 0
-
       cuke.Setup = {
         Before = true,
         Step = function()
-          count = 4
+          cuke.count = 4
         end
       }
 
       cuke.ExpectCukes = {
-        Given = "^I should have 4 cukes$",
+        Given = "^I should already have some cukes$",
         Step = function()
-          if count ~= 4 then
-            error("Expected 4 cukes!")
-          end
+          assert(count > 0)
         end
       }
       """

@@ -58,13 +58,13 @@ repeat
       if (op == "begin_scenario" ) then
         log:info("Beginning scenario")
         for k,v in pairs(cuke) do
-          if cuke.Before then cuke.Step() end
+          if v.Before then cuke.Step() end
         end
         success()
       elseif (op == "end_scenario" ) then
         log:info("Ending scenario")
         for k,v in pairs(cuke) do
-          if cuke.After then cuke.Step() end
+          if v.After then cuke.Step() end
         end
         success()
       elseif (op == "step_matches") then
