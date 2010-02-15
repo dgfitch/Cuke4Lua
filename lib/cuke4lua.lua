@@ -76,9 +76,19 @@ responses = {
       for k,v in pairs(cuke) do
         if type(v) == "table" then
           local stepRegex = v.Given or v.When or v.Then
-          if stepRegex and regex.match(nameToMatch, stepRegex) then
-            local value = {id=k,args={}}
-            table.insert(matches,value)
+          if stepRegex then
+            if regex.match(nameToMatch, stepRegex) then
+              local args = {}
+              regex.gsub(nameToMatch, stepRegex,
+                function(...)
+                  for i,v in ipairs(args) do
+                    -- TODO: Not sure how to get capture position with lrexlib
+                    table.insert(args,{val=v,pos=0})
+                  end
+                end)
+              local value = {id=k,args=args}
+              table.insert(matches,value)
+            end
           end
         end
       end

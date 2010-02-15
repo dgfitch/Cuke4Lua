@@ -15,6 +15,7 @@ Feature: Run Cuke4Lua and Cucumber from a single command
 
       """
       
+    @wip
     Scenario: A passing step
       Given a step definition module containing:
         """

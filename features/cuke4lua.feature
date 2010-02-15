@@ -69,6 +69,27 @@ Feature: Run Lua step definitions from Cucumber
 
       """
   
+  Scenario: Invoke a step definition with multiple arguments
+    Given Cuke4Lua started with a step definition module containing:
+      """
+      cuke.AllWired = {
+        Given = "^we're (\\w+) (\\w+)$",
+        Step = function(word1, word2)
+          assert(word1 == "all")
+          assert(word2 == "wired")
+        end
+      }
+      """
+    When I run cucumber -f progress features
+    Then STDERR should be empty
+    And it should pass with
+      """
+      .
+
+      1 scenario (1 passed)
+      1 step (1 passed)
+
+      """
   Scenario: Invoke correct matching step definition which passes
     Given Cuke4Lua started with a step definition module containing:
       """
